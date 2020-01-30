@@ -1,0 +1,177 @@
+{% extends "dashboard/index.html" %}
+{% load bootstrap3 %}
+
+{% block custom_javascript %}
+$( document ).ready(
+    function() {
+        document.getElementById("avator_file").onchange = function onAvatorSet() {
+        document.getElementById("avator").submit();
+        };
+});
+{% endblock %}
+
+{% block content %}
+<legend> Личный кабинет пользователя {{formU.instance.username}} </legend>
+
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+{% if error_message2 %}<p><strong>{{ error_message2 }}</strong></p>{% endif %}
+<table>
+<tr>
+    <td>
+        <table width="250" border="0" cellpadding="0" cellspacing="0" bgcolor="#000000">
+                <tr>
+                <td bgcolor="#FFFFFF">
+                    <img width="280" height="400" src="{{ avatorka.image.url|default_if_none:"" }}" class="img-thumbnail"/>
+                </td>
+                </tr>
+            </table>
+
+    <form enctype="multipart/form-data" id="avator" action="/accounts/avator/change/" method="post" class="form">
+            {%if is_owner%}
+            <table width="10" border="0" cellpadding="0" cellspacing="1" bgcolor="#000000">
+                <tr>
+
+                <td bgcolor="#FFFFFF"><input type="file" id="avator_file" name="image">
+                <input type="hidden" name="custom_user" value="{{ form.instance.user_id_id }}">
+                </td>
+                </tr>
+            </table>
+        {% endif %}
+    </form>
+    </td>
+<td style="width: 100%">
+    <form action="/accounts/profile/" method="post" class="form">
+        {% bootstrap_form formU %}
+        {% bootstrap_form form %}
+         <button type="submit" value="Сохранить" class="btn btn-primary">Сохранить</button>
+    </form>
+</td>
+
+
+</tr>
+</table>
+<!-- Employees filtered-->
+     <div style="margin-top:20px">
+        <h3> Все исполнители пользователя {{formU.instance.username}}</h3>
+        {% if employees %}
+        <table style="width:100%" class="table table-hover">
+            <tr class="success">
+                <td>&nbsp;</td>
+                <td style="font-weight:bold" width=100 nowrap >Полное имя </td>
+                <td style="font-weight:bold" width=100 nowrap>Город </td>
+                <td style="font-weight:bold" width=100 nowrap >Специализация </td>
+                <td style="font-weight:bold" width=100 nowrap>Описание </td>
+                <td style="font-weight:bold">Цена </td>
+                <td style="font-weight:bold">Валюта</td>
+                <td style="font-weight:bold">Телефон</td>
+                <td style="font-weight:bold">Email</td>
+                <td style="font-weight:bold">Рейтинг</td>
+            </tr>
+
+        {%for employee in employees %}
+            <tr class="info">
+                <td>
+
+                </td>
+                <td style="padding-top:20px;width:75%">
+                    <a style="color:darkgreen;" href="/employees/{{employee.id}}/details" title="Детали">{{employee.full_name}}</a>
+                    <a style="color:black;" href="/photos/{{employee.id}}/" title="Просмотр работ"><img class="icon" src="static/common/photos.png"><b>{{ employee.photoes_count }}</b></a>
+                    {% if user.id == employee.user_id_id %}
+                    <a style="color:orange;" href="/employees/{{employee.id}}/edit" title="Редактировать"><img class="icon" src="static/common/edit.png"></a>
+                    {% endif %}
+                     {% if user.id == employee.user_id_id %}
+                    <a style="color:red;" href="/employees/{{employee.id}}/delete" title="Удалить"><img class="icon" src="static/common/delete.png"></a>
+                     {% endif %}
+                </td>
+                <td  style="padding-top:20px">{{employee.location}}</td>
+            <td  style="padding-top:20px">{{employee.get_specialisation_display}}</td>
+            <td  style="padding-top:20px">{{employee.description|striptags|slice:"50"}}</td>
+            <td  style="padding-top:20px">{{employee.price_per_m2}}</td>
+            <td  style="padding-top:20px">{{employee.get_currency_display}}</td>
+            <td  style="padding-top:20px">{{employee.contact_phone}}</td>
+            <td  style="padding-top:20px">{{employee.contact_email}}</td>
+            <td  style="padding-top:20px">{{employee.rating}}</td>
+            </tr>
+        {%endfor%}
+        </table>
+        <div class="pagination">
+            <span class="step-links">
+                {% if employees.has_previous %}
+                    <a href="?page={{ employees.previous_page_number }}">предыдущая</a>
+                {% endif %}
+
+                <span class="current">
+                    Страница {{ employees.number }} из {{ employees.paginator.num_pages }}.
+                </span>
+
+                {% if employees.has_next %}
+                    <a href="?page={{ employees.next_page_number }}">следующая</a>
+                {% endif %}
+            </span>
+        </div>
+        {%else%}
+            <span style="color:red">У вас нет ни одного исполнителя</span>
+        {% endif %}
+    </div>
+
+    <!-- My customers filtered -->
+        <div>
+        <h3> Все заказчики пользователя {{formU.instance.username}}</h3>
+        {% if customers %}
+        <table style="width:100%" class="table table-hover">
+            <tr class="success">
+
+                <td style="font-weight:bold" width=100 nowrap >Полное имя </td>
+                <td style="font-weight:bold" width=100 nowrap>Город </td>
+                <td style="font-weight:bold" width=100 nowrap>Тип работ </td>
+                <td style="font-weight:bold" width=100 nowrap>Описание </td>
+                <td style="font-weight:bold">Цена </td>
+                <td style="font-weight:bold">Валюта </td>
+                <td style="font-weight:bold">Телефон </td>
+                <td style="font-weight:bold">Email </td>
+                <td style="font-weight:bold">Рейтинг </td>
+            </tr>
+
+        {%for customer in customers %}
+            <tr class="info">
+
+                <td style="padding-top:20px;width:75%">
+                    <a style="color:#000;" href="/customers/{{customer.id}}/details" title="Детали">{{customer.full_name}}</a>
+                    {% if user.id == customer.user_id_id %}
+                        <a style="color:#0F1;" href="/customers/{{customer.id}}/edit" title="Редактировать"><img class="icon" src="static/common/edit.png"></a>
+                    {% endif %}
+                    {% if user.id == customer.user_id_id %}
+                        <a style="color:red;" href="/customers/{{customer.id}}/delete" title="Удалить"><img class="icon" src="static/common/delete.png"></a>
+                    {% endif %}
+                </td>
+                <td  style="padding-top:20px">{{customer.location}}</td>
+            <td  style="padding-top:20px">{{customer.get_typeofwork_display}}</td>
+            <td  style="padding-top:20px">{{customer.description|striptags|slice:"50"}}</td>
+            <td  style="padding-top:20px">${{customer.price_per_m2}}</td>
+            <td  style="padding-top:20px">{{customer.get_currency_display}}</td>
+            <td  style="padding-top:20px">{{customer.contact_phone}}</td>
+            <td  style="padding-top:20px">{{customer.contact_email}}</td>
+            <td  style="padding-top:20px">{{customer.rating}}</td>
+
+            </tr>
+        {%endfor%}
+        </table>
+        <div class="pagination">
+            <span class="step-links">
+                {% if customers.has_previous %}
+                    <a href="?page={{ customers.previous_page_number }}">предыдущая</a>
+                {% endif %}
+                <span class="current">
+                    Страница {{ customers.number }} из {{ customers.paginator.num_pages }}.
+                </span>
+                {% if customers.has_next %}
+                    <a href="?page={{ customers.next_page_number }}">следующая</a>
+                {% endif %}
+            </span>
+        </div>
+         {%else%}
+            <span style="color:red">У вас нет ни одного заказчика</span>
+        {% endif %}
+     </div>
+
+{% endblock %}

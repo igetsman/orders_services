@@ -1,0 +1,40 @@
+{% extends "dashboard/index.html" %}
+
+{% load i18n %}
+
+{% block branding %}
+<h2 id="site-name">{% trans 'Авторизация в Заказчики-Исполнители' %}</h2>
+{% endblock %}
+
+{% block nav-global %}{% endblock %}
+
+{% load i18n %}
+{% block content %}
+
+  {% if form.errors %}
+    <p class="error">Извините, неверный логин или пароль</p>
+  {% endif %}
+<div id="content-main">
+
+  <form action="" method="post">{% csrf_token %}
+  <div class="form-row">
+    <label for="username">Логин:</label>
+    <input type="text" name="username" value="" class="form-control" id="username">
+  </div>
+  <div class="form-row">
+    <label for="password">Пароль:</label>
+    <input type="password" name="password" class="form-control" value="" id="password">
+  </div>
+  <div class="submit-row">
+  	<label>&nbsp;</label><button type="submit" class="btn btn-primary">Зайти</button>
+    <input type="hidden" name="next" value="/dashboard/" />
+  </div>
+  </form>
+<script type="text/javascript">
+document.getElementById('username').focus()
+</script>
+</div>
+
+{% endblock %}
+
+

@@ -1,0 +1,12 @@
+{% extends "dashboard/index.html" %}
+{% block content %}
+{% load bootstrap3 %}
+<legend>Регистрация</legend>
+<form method="post" action="" class="form">
+<dl class="register">
+    {%csrf_token %}
+    {% bootstrap_form form %}
+</dl>
+<button type="submit" class="btn btn-primary">Зарегистрироваться</button>
+</form>
+{% endblock %}

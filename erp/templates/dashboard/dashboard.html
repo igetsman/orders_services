@@ -1,0 +1,30 @@
+{% extends "dashboard/index.html" %}
+{% load bootstrap3 %}
+{% block content %}
+      <!-- Jumbotron -->
+      <div class="jumbotron">
+        <h1>Главный заголовок</h1>
+        <p class="lead">Пример текста подзаголовка, пример текста для подзаголовка</p>
+        <p><a class="btn btn-lg btn-success" href="/accounts/register/">Присоединиться</a></p>
+      </div>
+
+      <!-- Example row of columns -->
+      <div class="row">
+        <div class="col-lg-4">
+          <h2>Заказчики</h2>
+          <p>Эта страница ведет на раздел сайта, посвященного заказчикам, здесь просто текст который поясняет о чем речь. Список обычный и все такое.</p>
+          <p><a class="btn btn-primary" href="/customers/">Перейти &raquo;</a></p>
+        </div>
+        <div class="col-lg-4">
+          <h2>Исполнители</h2>
+          <p>Эта страница ведет на раздел сайта, посвященного исполнителям, здесь просто текст который поясняет о чем речь. Список обычный и все такое.</p>
+          <p><a class="btn btn-primary" href="/employees/">Перейти &raquo;</a></p>
+       </div>
+        <div class="col-lg-4">
+          <h2>Правила</h2>
+          <p>Эта страница ведет на раздел сайта неясно какой. По видимому тут будут правила расписаны. А может чего нить и другое, не думал пока</p>
+          <p><a class="btn btn-primary" href="#">Перейти &raquo;</a></p>
+        </div>
+      </div>
+{% endblock %}
+

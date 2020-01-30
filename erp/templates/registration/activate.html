@@ -1,0 +1,7 @@
+{% extends "dashboard/index.html" %}
+{% block content %}
+<legend>Активация</legend>
+Привет, {{ account }}!<br/>
+Ваша учетная запись активирована. <a href="{% url auth_login %}">Заходите</a> на сайт.
+<br/><br/>
+{% endblock %}

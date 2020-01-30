@@ -1,0 +1,107 @@
+{% extends "dashboard/index.html" %}
+{% block content %}
+<legend>Все исполнители</legend>
+    <div class="table-responsive">
+        <table class="table table-hover">
+        <tr>
+          {% if user.is_authenticated %}
+            <form action="/employees/create" method="post">
+               <td style="padding-top:5px"><button type="submit" class="btn btn-primary button">Добавить исполнителя</button>
+            </form>
+        {% endif %}
+        </tr>
+            <tr class="success">
+                <td style="font-weight:bold" width=190 nowrap >Полное имя </td>
+                <td style="font-weight:bold" width=50 nowrap>Город</td>
+                <td style="font-weight:bold" width=50 nowrap >Специализация</td>
+                <td style="font-weight:bold" width=80 nowrap>Описание </td>
+                <td style="font-weight:bold">Цена </td>
+                <td style="font-weight:bold">Валюта</td>
+                <!--<td style="font-weight:bold">Телефон</td>-->
+                <td style="font-weight:bold">Email</td>
+                <td style="font-weight:bold" width=5>R</td>
+                <td style="font-weight:bold">Комм.</td>
+                <td style="font-weight:bold">Владелец</td>
+            </tr>
+        {% if form_filtered.instance %}
+        <form method="get" action=".">
+            <tr class='filter'>
+                <td style="font-weight:bold" width=100 nowrap ><input type="text" style="width:200px;" name="full_name" value="{{ form_filtered.instance.full_name }}" onKeyPress="return submitenter(this,event);"></td>
+                <td style="font-weight:bold" width=100 nowrap><input type='text' name='location' value="{{ form_filtered.instance.location }}" onKeyPress="return submitenter(this,event)"></td>
+                <td style="font-weight:bold" width=100 nowrap><select name="specialisation" onchange="return submitselect(this,event)">
+                                                                    <option value="{{ form_filtered.instance.specialisation|default:'' }}">{{ form_filtered.instance.get_specialisation_display|default:'Все' }}</option>
+                                                                    {% if form_filtered.instance.specialisation != '' %} <option value="">Все</option>{% endif %}
+                                                                {% for x,y in form_filtered.fields.specialisation.choices %}
+                                                                    <option value="{{ x }}">{{ y }}</option>
+                                                                {% endfor %}
+                                                               </select></td>
+                <td style="font-weight:bold" width=100 nowrap><input type='text' name='description' value="{{ form_filtered.instance.description }}" onKeyPress="return submitenter(this,event)"></td>
+                <td style="font-weight:bold"><input type='text' name='price_per_m2' value="{{ form_filtered.instance.price_per_m2|default_if_none:'' }}" onKeyPress="return submitenter(this,event)"></td>
+                <td style="font-weight:bold"><select name="currency" onchange="return submitselect(this,event)">
+                                                    <option value="{{ form_filtered.instance.currency|default:'' }}">{{ form_filtered.instance.get_currency_display|default:'Все' }}</option>
+                                                    {% if form_filtered.instance.currency != '' %} <option value="">Все</option>{% endif %}
+                                                {% for x,y in form_filtered.fields.currency.choices %}
+                                                    <option value="{{ x }}">{{ y }}</option>
+                                                {% endfor %}
+                                             </select></td>
+                <td style="font-weight:bold"><input type='text' name='contact_phone' value="{{ form_filtered.instance.contact_phone }}" onKeyPress="return submitenter(this,event)"></td>
+                <!--<td style="font-weight:bold"><input type='text' name='contact_email' value="{{ form_filtered.instance.contact_email }}" onKeyPress="return submitenter(this,event)"></td>-->
+                <!--<td style="font-weight:bold"><input type='text' style="width:5px;" name='rating' value="{{ form_filtered.instance.rating|default_if_none:'' }}" onKeyPress="return submitenter(this,event)"></td>-->
+                <!--<td style="font-weight:bold"></td> -->
+            </tr>
+            <input hidden='true' type='submit'/>
+        </form>
+            {% endif %}
+    {% if employees %}
+    <form action="/employees/delete" method="post">
+        {%for employee in employees %}
+            <tr class="info">
+                <td style="padding-top:16px;width:100%">
+                    <em><a style="color:black;font-weight:bold;text-decoration: underline;" href="/employees/{{employee.id}}/details" title="Детали">{{employee.full_name}}</a></em>
+                    <a style="color:black;" href="/photos/{{employee.id}}/" title="Просмотр работ"><img class="icon" src="static/common/photos.png"><b>{{ employee.photoes_count }}</b></a>
+                    {% if user.id == employee.user_id_id %}
+                    <a style="color:orange;" href="/employees/{{employee.id}}/edit" title="Редактировать"><img class="icon" src="static/common/edit.png"></a>
+                    {% endif %}
+                     {% if user.id == employee.user_id_id %}
+                    <a style="color:red;" href="/employees/{{employee.id}}/delete" title="Удалить"><img class="icon" src="static/common/delete.png"></a>
+                     {% endif %}
+                </td>
+                <td  style="padding-top:20px">{{employee.location}}</td>
+            <td  style="padding-top:20px">{{employee.get_specialisation_display}}</td>
+            <td  style="padding-top:20px">{{employee.description|striptags|slice:"50"}}</td>
+            <td  style="padding-top:20px">{{employee.price_per_m2}}</td>
+            <td  style="padding-top:20px">{{employee.get_currency_display}}</td>
+            <!--<td  style="padding-top:20px">{{employee.contact_phone}}</td>-->
+            <td  style="padding-top:20px">{{employee.contact_email}}</td>
+            <td  style="padding-top:20px">{{employee.rating}}<img src="static/common/bar.gif" height="10" width="{% widthratio employee.rating 1 1 %}"/></td>
+            <td  style="padding-top:20px">{{employee.comments_count}}</td>
+            <td  style="padding-top:20px"><a href="/accounts/profile/{{employee.user_id_id}}/"><input type="" class="myProfile" title="Профиль владельца"/></a></td>
+            </tr>
+        {%endfor%}
+        </table>
+        <div class="pagination">
+            <span class="step-links">
+                {% if employees.has_previous %}
+                    <a href="?page={{ employees.previous_page_number }}">предыдущая</a>
+                {% endif %}
+
+                <span class="current">
+                    Страница {{ employees.number }} из {{ employees.paginator.num_pages }}.
+                </span>
+
+                {% if employees.has_next %}
+                    <a href="?page={{ employees.next_page_number }}">следующая</a>
+                {% endif %}
+            </span>
+        </div>
+        <br>
+
+        </form>
+
+        {%else%}
+        </table>
+            <span style="color:red">Извините, исполнители отсутствуют.</span>
+        {% endif %}
+    </div>
+{% endblock %}
+

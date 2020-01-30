@@ -1,0 +1,111 @@
+{% extends "dashboard/index.html" %}
+{% block content %}
+<legend> Все заказчики</legend>
+    <div class="table-responsive">
+        <table class="table table-hover">
+        <tr>
+          {% if user.is_authenticated %}
+            <form action="/customers/create" method="post">
+               <td style="padding-top:5px"><button type="submit" class="btn btn-primary button">Добавить заказчика</button>
+            </form>
+        {% endif %}
+        </tr>
+            <tr class="success">
+                <td style="font-weight:bold" width=190 nowrap >Полное имя</td>
+                <td style="font-weight:bold" width=50 nowrap>Город</td>
+                <td style="font-weight:bold" width=40 nowrap>Тип работ</td>
+                <td style="font-weight:bold" width=50 nowrap>Описание </td>
+                <td style="font-weight:bold" width=50>Цена спроса</td>
+                <td style="font-weight:bold">Валюта</td>
+                <!--<td style="font-weight:bold">Телефон</td>-->
+                <td style="font-weight:bold">Email</td>
+                <td style="font-weight:bold">Обновление</td>
+                <td style="font-weight:bold" width=10>R</td>
+                <td style="font-weight:bold">Комм.</td>
+                <td style="font-weight:bold">Владелец</td>
+            </tr>
+        {% if form_filtered.instance %}
+        <form method="get" action=".">
+            <tr class="filter">
+                <td style="font-weight:bold" nowrap><input type="text" style="width:190px;" name="full_name" value="{{ form_filtered.instance.full_name }}" onKeyPress="return submitenter(this,event);"></td>
+                <td style="font-weight:bold" width=80 nowrap><input type='text' name='location' value="{{ form_filtered.instance.location }}" onKeyPress="return submitenter(this,event)"></td>
+                <td style="font-weight:bold" width=100 nowrap><select name="typeofwork" onchange="return submitselect(this,event)">
+                                                                    <option value="{{ form_filtered.instance.typeofwork|default:'' }}">{{ form_filtered.instance.get_typeofwork_display|default:'Все' }}</option>
+                                                                    {% if form_filtered.instance.typeofwork != '' %} <option value="">Все</option>{% endif %}
+                                                                {% for x,y in form_filtered.fields.typeofwork.choices %}
+                                                                    <option value="{{ x }}">{{ y }}</option>
+                                                                {% endfor %}
+                                                               </select></td>
+                <td style="font-weight:bold" width=100 nowrap><input type='text' name='description' value="{{ form_filtered.instance.description }}" onKeyPress="return submitenter(this,event)"></td>
+                <td style="font-weight:bold"><input type='text' name='price_per_m2' value="{{ form_filtered.instance.price_per_m2|default_if_none:'' }}" onKeyPress="return submitenter(this,event)"></td>
+                <td style="font-weight:bold"><select name="currency" onchange="return submitselect(this,event)">
+                                                    <option value="{{ form_filtered.instance.currency|default:'' }}">{{ form_filtered.instance.get_currency_display|default:'Все' }}</option>
+                                                    {% if form_filtered.instance.currency != '' %} <option value="">Все</option>{% endif %}
+                                                {% for x,y in form_filtered.fields.currency.choices %}
+                                                    <option value="{{ x }}">{{ y }}</option>
+                                                {% endfor %}
+                                             </select></td>
+                <!--<td style="font-weight:bold"><input type='text' name='contact_phone' value="{{ form_filtered.instance.contact_phone }}" onKeyPress="return submitenter(this,event)"></td>-->
+                <td style="font-weight:bold"><input type='text' name='contact_email' value="{{ form_filtered.instance.contact_email }}" onKeyPress="return submitenter(this,event)"></td>
+                <td style="font-weight:bold"><!--<input type='text' name='modification_time' value="{{ form_filtered.instance.modification_time|default_if_none:'' }}" onKeyPress="return submitenter(this,event)">--></td>
+                <td style="font-weight:bold"><input type='text' style="width:10px;" name='rating' value="{{ form_filtered.instance.rating|default_if_none:'' }}" onKeyPress="return submitenter(this,event)"></td>
+                <td style="font-weight:bold"></td>
+            </tr>
+            <input hidden='true' type='submit'/>
+        </form>
+            {% endif %}
+    {% if customers %}
+    <form action="/customers/delete" method="post">
+        {%for customer in customers %}
+            <tr class="info">
+                <td style="padding-top:20px;width:75%">
+                    <a style="color:black;font-weight:bold;text-decoration: underline;" href="/customers/{{customer.id}}/details" title="Детали">{{customer.full_name}}</a>
+                    {% if user.id == customer.user_id_id %}
+                        <a style="color:#0F1;" href="/customers/{{customer.id}}/edit" title="Редактировать"><img class="icon" src="static/common/edit.png"></a>
+                    {% endif %}
+                    {% if user.id == customer.user_id_id %}
+                        <a style="color:red;" href="/customers/{{customer.id}}/delete" title="Удалить"><img class="icon" src="static/common/delete.png"></a>
+                    {% endif %}
+                </td>
+                <td  style="padding-top:20px">{{customer.location}}</td>
+            <td  style="padding-top:20px">{{customer.get_typeofwork_display}}</td>
+            <td  style="padding-top:20px">{{customer.description|striptags|slice:"50" }}</td>
+            <td  style="padding-top:20px">{{customer.price_per_m2}}</td>
+            <td  style="padding-top:20px">{{customer.get_currency_display}}</td>
+            <!--<td  style="padding-top:20px">{{customer.contact_phone}}</td>-->
+            <td  style="padding-top:20px">{{customer.contact_email}}</td>
+            <td  style="padding-top:20px">{{customer.modification_time|date}}</td>
+            <td  style="padding-top:20px">{{customer.rating}}<img src="static/common/bar.gif" height="10" width="{% widthratio customer.rating 2 1 %}"/></td>
+            <td  style="padding-top:20px">{{customer.comments_count}}</td>
+            <td  style="padding-top:20px"><a href="/accounts/profile/{{customer.user_id_id}}/"><input type="" class="myProfile" title="Профиль владельца"/></a></td>
+                   
+            </tr>
+        {%endfor%}
+     </form>
+           
+        </table>
+
+        <div class="pagination">
+            <span class="step-links">
+                {% if customers.has_previous %}
+                    <a href="?page={{ customers.previous_page_number }}">предыдущая</a>
+                {% endif %}
+
+                <span class="current">
+                    Страница {{ customers.number }} из {{ customers.paginator.num_pages }}.
+                </span>
+
+                {% if customers.has_next %}
+                    <a href="?page={{ customers.next_page_number }}">следующая</a>
+                {% endif %}
+            </span>
+        </div>
+       </form>
+
+        {%else%}
+        </table>
+            <span style="color:red">Извините, заказчики отсутствуют.</span>
+        {% endif %}
+    </div>
+{% endblock %}
+

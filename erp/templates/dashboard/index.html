@@ -1,0 +1,118 @@
+{% load poll_extras %}
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="ru">
+<head>
+   <title>Главная страница / Заказчики-Исполнители</title>
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+   {% load bootstrap3 %}
+   {% bootstrap_css %}
+   {% bootstrap_javascript %}
+    <link href="/erp/static/css/justified-nav.css" rel="stylesheet">
+   <link rel="stylesheet" type="text/css" href="/erp/static/css/base.css" />
+   <style>
+	#ft{
+		margin-top:40px;
+		border-top:solid 1px #ccc;
+		padding-top:10px;
+	}
+	#hd{
+		margin-bottom:20px;:
+	}
+   </style>
+
+<SCRIPT TYPE="text/javascript">
+<!--
+{% block custom_javascript %}{% endblock %}
+function submitenter(myfield,e)
+{
+    var keycode;
+    if (window.event) keycode = window.event.keyCode;
+    else if (e) keycode = e.which;
+    else return true;
+
+    if (keycode == 13)
+       {
+       myfield.form.submit();
+       return false;
+       }
+    else
+       return true;
+}
+
+function submitselect(myfield,e)
+{
+    var keycode;
+    if (window.event) keycode = window.event.keyCode;
+    else if (e) keycode = e.which;
+    else return true;
+    myfield.form.submit();
+    return false;
+}
+//-->
+</SCRIPT>
+</head>
+<body>
+<div id="doc" class="yui-t2">
+   <div id="hd" role="Header">
+    <legend style="color:orange;margin-top:20px">Заказчики-Исполнители</legend>
+   </div>
+   <div id="bd" role="main">
+        <div id="yui-main">
+            <div class="yui-b">
+                <div class="container">
+                    {% block content %}{% endblock %}
+                </div>
+            </div>
+        </div>
+
+
+	<div class="yui-b" >
+        <br>
+        <br>
+		<ul class="list-group">
+    		<a href="/index" class="leftmenu"><li class="list-group-item {% if 'index' in request.path %}active{% endif %}">Главная</li></a>
+            <a href="/news/" class="leftmenu"><li class="list-group-item {% if 'news' in request.path %}active{% endif %}">Новости</li></a>
+			<a href="/employees/" class="leftmenu"><li class="list-group-item {% if 'employee' in request.path %}active{% endif %}">Исполнители<span class="badge">{{ ""|count_of_employees }}</span></li></a>
+            <a href="/customers/" class="leftmenu"><li class="list-group-item {% if 'customer' in request.path %}active{% endif %}">Заказчики<span class="badge">{{ ""|count_of_customers }}</span></li></a>
+            {% if user.is_staff %}
+            <li>  </li>
+			<a href="/admin/" class="leftmenu"><li class="list-group-item">Администрирование</li></a>
+            {%endif%}
+        <li>  </li>
+        {% if user.is_authenticated %}
+			 <li>  </li>
+        {% else %}
+            <a href="/accounts/login/" class="leftmenu"><li class="list-group-item">Войти</li></a>
+            <a href="/accounts/register/" class="leftmenu"><li class="list-group-item">Зарегистрироваться</li></a>
+        {% endif %}
+		</ul>
+            {% if user.is_authenticated %}
+                <a href="/accounts/profile/" class="leftmenu">
+                    <li class="list-group-item {% if 'accounts/profile' in request.path and is_owner %}active{% endif %}">
+                        <table>
+                            <tbody>
+                                <tr><td><b>Профиль пользователя</b></td></tr>
+                                <tr><td><br></td></tr>
+                                <tr><td>Имя: {{ user.first_name }}</td></tr>
+                                <tr><td>Фамилия: {{ user.last_name }}</td></tr>
+                                <tr><td><br></td></tr>
+                                <tr><td>Почта:</td></tr>
+                                <tr><td>{{ user.email }}</td></tr>
+                                <tr><td>Авторизация:</td></tr>
+                                <tr><td>{{ user.last_login }}</td></tr>
+                                <tr><td>Регистрация:</td></tr>
+                                <tr><td>{{ user.date_joined }}</td></tr>
+                            </tbody>
+                        </table>
+                    </li>
+                </a>
+                <li> <br></li>
+                <a href="/accounts/logout/" class="leftmenu"><li class="list-group-item">Выйти из профиля</li></a>
+        {% endif %}
+	</div>
+</div>
+</div>
+</body>
+</html>
+

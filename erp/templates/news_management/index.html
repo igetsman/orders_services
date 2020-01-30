@@ -1,0 +1,78 @@
+{% extends "dashboard/index.html" %}
+{% block content %}
+<legend>Все новости</legend>
+    <div style="margin-top:0px">
+        <table class="table">
+        <tr>
+          {% if user.is_authenticated %}
+            <form action="/news/create" method="post">
+               <td style="padding-top:5px"><button type="submit" class="btn btn-primary button">Добавить новость</button>
+            </form>
+        {% endif %}
+        </tr>
+        <!--
+            <tr class="success">
+                <td style="font-weight:bold" width=800 nowrap>Текст новости </td>
+                <td style="font-weight:bold" width=30>Рейтинг</td>
+                <td style="font-weight:bold">Комментарии</td>
+                <td style="font-weight:bold">Автор</td>
+            </tr>
+        -->
+        <!--
+        {% if form_filtered.instance %}
+        <form method="get" action=".">
+            <tr class='filter'>
+                <td style="font-weight:bold" width=100 nowrap><input type='text' name='description' value="{{ form_filtered.instance.description }}" onKeyPress="return submitenter(this,event)"></td>
+                <td style="font-weight:bold"><input type='text' style="width:30px;" name='rating' value="{{ form_filtered.instance.rating|default_if_none:'' }}" onKeyPress="return submitenter(this,event)"></td>
+                <td style="font-weight:bold"></td>
+            </tr>
+            <input hidden='true' type='submit'/>
+        </form>
+            {% endif %}
+            -->
+    {% if news %}
+    <form action="/news/delete" method="post">
+        {%for new in news %}
+            <tr class="list-group-item">
+                <td style="padding-top:0px;width:100%">
+                    {% if user.id == new.user_id_id %}
+                    <a style="color:orange;" href="/news/{{new.id}}/edit" title="Редактировать"><img class="icon" src="static/common/edit.png"></a>
+                    {% endif %}
+                     {% if user.id == new.user_id_id %}
+                    <a style="color:red;" href="/news/{{new.id}}/delete" title="Удалить"><img class="icon" src="static/common/delete.png"></a>
+                     {% endif %}
+                Опубликовано {{ new.date|date }} в {{ new.date|time }}
+                Автор: <a href="/accounts/profile/{{new.user_id_id}}/">{{ new.user_id.user_id }}</a>
+                Комментарий: {{new.comments_count}}  Рейтинг: {{new.rating}}<img src="static/common/bar.gif" height="10" width="{% widthratio new.rating 2 1 %}"/>
+                 {{new.description|safe|truncatewords:150|default_if_none:""}} <a class="btn btn-link" href="/news/{{new.id}}/details">Подробнее &raquo;</a>
+                </td>
+            </tr>
+            <tr><td></td></tr>
+        {%endfor%}
+        </table>
+        <div class="pagination">
+            <span class="step-links">
+                {% if news.has_previous %}
+                    <a href="?page={{ news.previous_page_number }}">предыдущая</a>
+                {% endif %}
+
+                <span class="current">
+                    Страница {{ news.number }} из {{ news.paginator.num_pages }}.
+                </span>
+
+                {% if news.has_next %}
+                    <a href="?page={{ news.next_page_number }}">следующая</a>
+                {% endif %}
+            </span>
+        </div>
+        <br>
+
+        </form>
+
+        {%else%}
+        </table>
+            <span style="color:red">Извините, новостей нет.</span>
+        {% endif %}
+    </div>
+{% endblock %}
+

@@ -1,0 +1,8 @@
+{% extends "dashboard/index.html" %}
+
+{% block content %}
+<legend> Вы уверены? </legend>
+   <a  href="/news/{{ news.id }}/delete/confirmed?ref={{ referer }}">Да</a>
+   <a  href="/news/">Нет</a>
+
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends "dashboard/index.html" %}
+{% load bootstrap3 %}
+{% block content %}
+<legend> {{form.instance.full_name}} - просмотр деталей </legend>
+
+
+{% if saved %}<p style="color:limegreen;margin-left:20px;">Сохранен успешно </p>{% endif %}
+{{ form.media }}
+{% bootstrap_form form %}
+ <div class="htmlpost">
+    <p> Текст объявления: </p>
+  {{form.instance.description|safe }}
+    </div>
+
+  {% if referer %}
+        <a href="/customers/"> Вернуться в список </a>
+    {%  endif %}
+
+{% if comments %}
+<h1 style="font-size:12px;font-weight:bold;border-bottom:solid 1px #ccc;margin-bottom:10px;padding-bottom:10px"> Комментарии участников ({{ comments_count }})</h1>
+    <table class="comments table">
+         {%for comment in comments %}
+                        <tr><td>{{ comment.date|date }} в {{ comment.date|time }} <b>{{ comment.author.user_id.username }}</b> пишет:</td></tr>
+                        <tr>
+                            <td class="alert-info">
+                                {{ comment.text }}
+                            </td>
+                        </tr>
+            {% endfor %}
+    </table>
+{% endif %}
+{% if formComment %}
+{% if user.is_authenticated %}
+    <form action="/comment/add/{{ form.instance.id }}/{{ form.instance.get_cname }}/" method="post" class="form">
+    {% bootstrap_form formComment %}
+       <button type="submit" value="Сохранить" class="btn btn-primary">Добавить комментарий
+    </button>
+    </form>
+{% endif %}
+{% endif %}
+
+{% endblock %}

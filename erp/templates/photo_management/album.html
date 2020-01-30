@@ -1,0 +1,43 @@
+{% extends "dashboard/index.html" %}
+{% block content %}
+    <h2 style="border-bottom:solid 1px #ccc;font-size:17px;font-weight:bold;padding-bottom:10px">Работы исполнителя {{ employee.full_name }}</h2>
+    <div style="margin-top:20px">
+        {% if photos %}
+
+        <table style="width:100%" class="table table-hover">
+            <tr>
+                <td>&nbsp;</td>
+                <td style="font-weight:bold" width=300 nowrap>Название </td>
+                <td style="font-weight:bold" width=100 nowrap >Изображение </td>
+            </tr>
+        <form action="/photos/{{ employee.id }}/delete" method="post">
+        {%for photo in photos %}
+            <tr>
+            {% if user.id == employee.user_id_id %}
+                <td><input type="checkbox" value="{{photo.id}}" name="id" /></td>
+            {% endif %}
+            <td  style="padding-top:50px">{{photo.title}}</td>
+            <td  style="padding-top:20px"><img width="640" height="480" src="{{ photo.image.url }}"/> </td>
+            </tr>
+        {%endfor%}
+            <tr>
+                {% if user.id == employee.user_id_id %}
+                    <td colspan="4"><br /> <button type="submit" class="btn btn-danger">Удалить</button>
+                {% endif %}
+                </form>
+            </tr>
+        </table>
+
+        {%else%}
+            <span style="color:red">Еще не добавлено ни одного изображения</span>
+        {% endif %}
+        {% if user.id == employee.user_id_id %}
+        <form action="/photos/{{ employee.id }}/create" method="get">
+           <td colspan="4"><br /> <button type="submit" class="btn btn-primary">Добавить</button>
+        </form>
+        {% endif %}
+
+    </div>
+    <a href="{{ referer }}"> Вернуться в список </a>
+{% endblock %}
+
